@@ -12,6 +12,7 @@ object EvaluationService {
   def simpleEval(): EvalResults = {
     val results = test map { i =>
       val predicted = NextActionPredictor.CurrentStrategy.predictNextAction(i.user_id, i.timestamp)
+      NextActionPredictor.CurrentStrategy.storeFeedback(i)
       predicted == i.action
     }
     val n = test.size.toDouble
