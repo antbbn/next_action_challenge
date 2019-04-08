@@ -32,10 +32,29 @@ object NextActionPredictor {
   //TODO: replace `new DummyPredictor(..)` with your NextActionPredictor
   //Note: you can also write your predictor in Java...
   //val CurrentStrategy: NextActionPredictor = new NextActionPredictorJava()
-  val CurrentStrategy: NextActionPredictor = new DummyPredictor(interactions, profiles)
+  val CurrentStrategy: NextActionPredictor = new NotSoDummyPredictor(interactions, profiles)
 }
 
 
+class NotSoDummyPredictor(train: Seq[Interaction], profiles: Seq[Profile]) extends NextActionPredictor {
+
+  val feedback: mutable.Map[Int, Int] = mutable.Map.empty[Int, Int]
+  train.foreach(i => storeFeedback(i))
+
+  val userDetails: Map[Int, Profile] = profiles.map(p => p.user_id -> p).toMap
+
+  val rand: Random = new Random(seed = 42)
+
+  override def predictNextAction(userId: Int, timestamp: Long): Int = {
+    feedback.getOrElse(userId, 3)
+  }
+
+  def storeFeedback(i: Interaction): Boolean = {
+    //simply remember the last action of the user:
+    feedback.put(i.user_id, i.action)
+    true
+  }
+}
 class DummyPredictor(train: Seq[Interaction], profiles: Seq[Profile]) extends NextActionPredictor {
 
   val feedback: mutable.Map[Int, Int] = mutable.Map.empty[Int, Int]
