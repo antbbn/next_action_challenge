@@ -1,0 +1,6 @@
+GET      /                       controllers.EvaluationController.evaluate
+
+GET     /api/predict/user/:userId/timestamp/:t   controllers.PredictionController.predict(userId: Int, t: Int)
+POST    /api/feedback                            controllers.PredictionController.storeFeedback()
+
+
